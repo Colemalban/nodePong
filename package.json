@@ -1,0 +1,14 @@
+{
+  "name": "nodePong",
+  "version": "1.0.0",
+  "description": "Multiplayer networked ping pong in nodejs",
+  "main": "index.js",
+  "author": "Cole Alban",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.15.2",
+    "global": "^4.3.2",
+    "jshint": "^2.9.4",
+    "ws": "^2.3.1"
+  }
+}
