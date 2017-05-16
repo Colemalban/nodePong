@@ -60,6 +60,16 @@ function findGame(){
             rightPaddle.updatePosition(message.playerTwoCoordinate);
             rightPaddle.draw();
         }
+        if(message.status == "end_game"){
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            ctx.font = "50px Arial";
+            if(message.victory){
+                ctx.fillText("VICTORY",100,100);
+            }
+            else{
+                ctx.fillText("LOSS",100,100);
+            }
+        }
     };
 }
 
