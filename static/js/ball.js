@@ -1,4 +1,5 @@
 function Ball(){
+    //TODO remove coordinate logic 
     this.radius = 15;
     this.x = 250;
     this.y = 250;

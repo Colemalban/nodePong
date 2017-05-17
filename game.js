@@ -1,6 +1,7 @@
 /*jshint esversion:6*/
 
 class Game{
+    //TODO break this into two player objects, paddle objects, and a ball object 
     constructor(playerOne,playerTwo){
         this.playerOne = playerOne;
         this.playerTwo = playerTwo;
@@ -17,6 +18,8 @@ class Game{
         this.ballVelocityY = 3;
         this.gameLoop = null;//To be the interval running the game loop
         var game = this;
+
+        //TODO break this off into their own functions maybe(make things look cleaner)
         playerOne.onPaddleMove = function(direction){
             switch(direction){
                 case "up":
@@ -50,15 +53,36 @@ class Game{
     }
 
     updateCoordinates(){
-        this.checkForScore();
-        if(this.checkForVictory() === true){
-            clearInterval(this.gameLoop);
-            return true;
-        }
+        this.ballIsOutOfBounds();
         this.ballX += this.ballVelocityX;
         this.ballY += this.ballVelocityY;
-        this.playerOneY += this.playerOneVelocity;
-        this.playerTwoY += this.playerTwoVelocity;
+        if(this.playerOneY <= 650 && this.playerOneY >= 0){
+            this.playerOneY += this.playerOneVelocity;
+        }
+        if(this.playerTwoY <= 650 && this.playerTwoY >= 0){
+            this.playerTwoY += this.playerTwoVelocity;
+        }
+        return false;
+    }
+
+    //TODO rename this so it isnt a boolean thing. Or should it return something instead maybe? like the velocity 
+    ballIsOutOfBounds(){
+        //TODO check if ball is colliding with paddle and if so, reverse the x direction some how 
+        if(this.ballY >= 740 || this.ballY <= 10){
+            this.ballVelocityY *= -1;
+        } 
+        if(this.ballHittingPaddle()){
+            this.ballX *= -1;
+        }
+    }
+
+    ballHittingPaddle(){
+        if((this.ballX >= 730 && this.ballX <= 740) && (this.ballY >= this.playerTwoY && this.ballY <= this.playerTwoY + 100)){
+            return true;
+        }
+        if((this.ballX >= 10 && this.ballX <= 20) && (this.ballY >= this.playerOneY && this.ballY <= this.playerOneY + 100)){
+            return true;
+        }
         return false;
     }
 
@@ -77,19 +101,17 @@ class Game{
         if(this.playerOneScore >= this.SCORE_LIMIT){
             this.playerOne.websocket.send(JSON.stringify({status:"end_game",victory:true}));
             this.playerTwo.websocket.send(JSON.stringify({status:"end_game",victory:false}));
-            console.log("SENDING VICTORY FOR ONE");
             return true;
         }
         if(this.playerTwoScore >= this.SCORE_LIMIT){
             this.playerOne.websocket.send(JSON.stringify({status:"end_game",victory:false}));
             this.playerTwo.websocket.send(JSON.stringify({status:"end_game",victory:true}));
-            console.log("SENDING VICTORY FOR TWO");
             return true;
         }
         return false;
     }
 
-    checkForScore(){
+    updateScore(){
         if(this.ballX > 730){
             this.playerOneScore += 1;
             this.resetBall();
@@ -108,14 +130,16 @@ class Game{
     }
 
     startGame(){
-        var game = this;
+        let game = this;
         this.playerOne.websocket.send(JSON.stringify({status:"start_game",player:1}));
         this.playerTwo.websocket.send(JSON.stringify({status:"start_game",player:2}));
         this.gameLoop = setInterval(function(){
-            var gameOver = game.updateCoordinates();
-            if(gameOver === true){
+            game.updateScore();
+            if(game.checkForVictory() === true){
+                clearInterval(game.gameLoop);
                 return;
             }
+            game.updateCoordinates();
             game.playerOne.websocket.send(JSON.stringify(game.getCoordinates()));
             game.playerTwo.websocket.send(JSON.stringify(game.getCoordinates()));
         },20);
