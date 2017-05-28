@@ -9,7 +9,8 @@ const http = require('http');
 const fs = require('fs');
 
 const serverPort = '80';
-const wss = new WebSocket.Server({port:3000});
+const serverIP = '0.0.0.0';
+const wss = new WebSocket.Server({host:'0.0.0.0',port:3000});
 const matchmaker = new Matchmaker([]);
 
 //Create static server
@@ -35,7 +36,7 @@ function serveFile(filePath, req, res){
     });
 }
 
-server.listen(serverPort);
+server.listen(serverPort, serverIP);
 
 //On new connection, create a new client object
 wss.on('connection', (ws)=>{
