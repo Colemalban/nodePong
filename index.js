@@ -5,39 +5,36 @@ const WebSocket = require('ws');
 const Client = require('./src/client.js');
 const Game = require('./src/game.js');
 const Matchmaker = require('./src/matchmaking');
+const express = require('express');
 const http = require('http');
-const fs = require('fs');
+const path = require('path');
+var argv = require('yargs').argv;
 
-const serverPort = '80';
-const serverIP = '0.0.0.0';
-const wss = new WebSocket.Server({host:'0.0.0.0',port:3000});
+//Constants
+const PORT = '80';
+const PUBLIC_IP= '0.0.0.0';
+const LOCAL_IP = '127.0.00.1';
+
+const app = express();
 const matchmaker = new Matchmaker([]);
 
-//Create static server
-const server = http.createServer((req,res)=>{
-    if(req.url.includes("static")){
-        serveFile(`./${req.url}`,req,res);
-    }
-    else{
-        serveFile('./static/views/index.html',req,res);
-    }
+
+app.get('/',(req,res)=>{
+    res.sendFile(path.join(__dirname,'static','views','index.html'));
 });
 
-function serveFile(filePath, req, res){
-    fs.readFile(filePath,'utf8', (err,data)=>{
-        if(err){
-            throw err;
-        }
-        else{
-            res.writeHead(200, {'Content-Type':"text/html"});
-            res.write(data);
-            res.end();
-        }
-    });
+app.use('/static',express.static(path.join(__dirname,'static')));
+
+//Create static server
+const server = http.createServer(app);
+const wss = new WebSocket.Server({server});
+
+IP = PUBLIC_IP;
+if(argv.local){
+    IP = LOCAL_IP;
 }
-
-server.listen(serverPort, serverIP);
-
+server.listen(PORT,IP);
+console.log("Server up and running");
 //On new connection, create a new client object
 wss.on('connection', (ws)=>{
     matchmaker.cleanQueue();

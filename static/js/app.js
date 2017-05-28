@@ -2,7 +2,7 @@
 
 var canvas = document.getElementById("gameBoard");
 var ctx = canvas.getContext("2d");
-var gameSocket = new WebSocket("ws://104.197.44.15:3000");
+var gameSocket = new WebSocket("ws://"+window.location.hostname);
 
 var ball = new Ball();
 var leftPaddle = new Paddle(1);
