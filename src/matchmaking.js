@@ -1,37 +1,53 @@
 /*jshint esversion:6*/
 
+const Game = require('./game');
+
 /*
  * This module will handle the matchmaking functionality of the server
- *TODO enqueue clients, start a game, clear out queue, clean out the queue, get size of queue
  */
 
 class Matchmaker{
     constructor(queue){
-        this.playerQueue = queue;
+        this.clientQueue = queue;
     }
 
     enqueue(player){
-        this.playerQueue.shift(player);
+        this.clientQueue.push(player);
     }
 
-    isReadyToStartGame(){
-        //TODO return a boolean indicating if the game is ready to start 
+    gameAvailable(){
+        this.cleanQueue();
+        if(this.clientQueue.length >= 2){
+            return true;
+        }
+        return false;
     }
 
     clearQueue(){
-        //TODO empty the queue 
+        //TODO should each connection be closed before clearing?
+        this.clientQueue = [];
     }
 
     cleanQueue(){
-        //TODO remove any dead clients from the queue 
+        //TODO does cleanup need to be done on each socket connection before close?
+        this.clientQueue = this.clientQueue.filter(function(client){
+            return client.alive;
+        });
     }
 
     createGame(){
-        //TODO start a game with two players 
+        this.cleanQueue();
+        if(this.gameAvailable()){
+            let playerOne = this.clientQueue.shift();
+            let playerTwo = this.clientQueue.shift();
+            return new Game(playerOne, playerTwo);
+        }
+        return null;
     }
 
-    playersQueued(){
-        //TODO return size of the queue 
+    clientCount(){
+        this.cleanQueue();
+        return this.clientQueue.length;
     }
 }
 
