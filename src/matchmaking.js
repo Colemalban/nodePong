@@ -36,7 +36,6 @@ class Matchmaker{
     }
 
     createGame(){
-        this.cleanQueue();
         if(this.gameAvailable()){
             let playerOne = this.clientQueue.shift();
             let playerTwo = this.clientQueue.shift();

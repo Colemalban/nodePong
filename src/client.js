@@ -7,7 +7,7 @@ class Client{
     constructor(websocket){
         this.websocket = websocket;
         this.alive = true;
-        this.websocket.on('message',(msg)=>{
+        this.websocket.on('message', (msg) => {
             var data = JSON.parse(msg);
             switch (data.request) {
                 case(OPEN_CONNECTION):
@@ -18,9 +18,6 @@ class Client{
                     break;
                 default:
                     break;
-            }
-            if(data.request == 1){
-                this.name = data.player;        
             }
         });
         this.websocket.on('close',()=>{

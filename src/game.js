@@ -2,7 +2,7 @@
 
 class Game{
     //TODO break this into two player objects, paddle objects, and a ball object 
-    constructor(playerOne,playerTwo){
+    constructor(playerOne, playerTwo){
         this.playerOne = playerOne;
         this.playerTwo = playerTwo;
         this.playerOneScore = 0;
@@ -12,10 +12,7 @@ class Game{
         this.playerTwoY = 10;
         this.playerOneVelocity = 0;
         this.playerTwoVelocity = 0;
-        this.ballX = 250;
-        this.ballY = 250;
-        this.ballVelocityX = 3;
-        this.ballVelocityY = 3;
+        this.ball = new Ball();
         this.gameLoop = null;//To be the interval running the game loop
         var game = this;
 
